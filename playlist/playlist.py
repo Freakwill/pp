@@ -65,13 +65,10 @@ def plotStats(fileName):
     ratings = []
     durations = []
     # iterate through tracks
-    for trackId, track in tracks.items():
-        try:
+    for track in tracks.values():
+        if 'Album Rating' in track and 'Total Time' in track
             ratings.append(track['Album Rating'])
             durations.append(track['Total Time'])
-        except:
-            # ignore
-            pass
 
     # ensure valid data was collected
     if ratings == [] or durations == []:
@@ -111,7 +108,7 @@ def findDuplicates(fileName):
     # create a track name dict
     trackNames = {}
     # iterate through tracks
-    for trackId, track in tracks.items():
+    for track in tracks.values():
         try:
             name = track['Name']
             duration = track['Total Time']
@@ -129,19 +126,17 @@ def findDuplicates(fileName):
             # ignore
             pass
     # store duplicates as (name, count) tuples
-    dups = []
-    for k, v in trackNames.items():
-        if v[1] > 1:
-            dups.append((v[1], k))
+    dups = [(v[1], k) for k, v in trackNames.items() if v[1] > 1]
+
     # save dups to file
     if len(dups) > 0:
         print("Found %d duplicates. Track names saved to dup.txt" % len(dups))
     else:
         print("No duplicate tracks found!")
-    f = open("dups.txt", 'w')
-    for val in dups:
-        f.write("[%d] %s\n" % (val[0], val[1]))
-    f.close()
+    with open("dups.txt", 'w') as f:
+        for val in dups:
+            f.write("[%d] %s\n" % (val[0], val[1]))
+
 
 # Gather our code in a main() function
 def main():
@@ -154,9 +149,9 @@ def main():
     group = parser.add_mutually_exclusive_group()
 
     # add expected arguments
-    group .add_argument('--common', nargs = '*', dest='plFiles', required=False)
-    group .add_argument('--stats', dest='plFile', required=False)
-    group .add_argument('--dup', dest='plFileD', required=False)
+    group.add_argument('--common', nargs = '*', dest='plFiles', required=False)
+    group.add_argument('--stats', dest='plFile', required=False)
+    group.add_argument('--dup', dest='plFileD', required=False)
 
     # parse args
     args = parser.parse_args()
