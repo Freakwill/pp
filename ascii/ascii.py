@@ -40,7 +40,7 @@ def covertImageToAscii(fileName, cols, scale, moreLevels):
     # open image and convert to grayscale
     image = Image.open(fileName).convert('L')
     # store dimensions
-    W, H = image.size[0], image.size[1]
+    W, H = image.size
     print("input image dims: %d x %d" % (W, H))
     # compute width of tile
     w = W/cols
@@ -81,9 +81,9 @@ def covertImageToAscii(fileName, cols, scale, moreLevels):
             avg = int(getAverageL(img))
             # look up ascii char
             if moreLevels:
-                gsval = gscale1[int((avg*69)/255)]
+                gsval = gscale1[(avg*69)//255]
             else:
-                gsval = gscale2[int((avg*9)/255)]
+                gsval = gscale2[(avg*9)//255]
             # append ascii char to string
             aimg[j] += gsval
     
@@ -124,12 +124,10 @@ def main():
     aimg = covertImageToAscii(imgFile, cols, scale, args.moreLevels)
 
     # open file
-    f = open(outFile, 'w')
-    # write to file
-    for row in aimg:
-        f.write(row + '\n')
-    # cleanup
-    f.close()
+    with open(outFile, 'w') as f:
+        # write to file
+        for row in aimg:
+            f.write(row + '\n')
     print("ASCII art written to %s" % outFile)
 
 # call main
